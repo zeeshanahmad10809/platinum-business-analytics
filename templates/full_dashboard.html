@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <!-- Required meta tags -->
+
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Dashboard</title>
+   <!-- Favicon -->
+   <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+   <!-- Typography CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+   <!-- Style CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- Responsive CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+</head>
+
+<body style="min-width: 960px; margin: 0 auto;" class=" app-no-scrollbar">
+
+   <div id="banner" class="banner">
+      <div class="banner-text" style="padding-top: 50px;padding-bottom:50px;">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12" style="margin-bottom: 0px;">
+                  <h1 style="font-size: xx-large;" class="text-uppercase">Dashboard</h1>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div id="reviews-div" class="reviews-div"
+      style="background-color: transparent;padding-left:8%;padding-right:8%;padding-top:10%;padding-bottom:10%;">
+   <h1 style="margin-bottom:50px">{{ project_name }}</h1>
+        {% if 'review_date' in reviews_list[0].keys() %}
+            {% for review_obj in reviews_list %}
+                <div class="card">
+                    <div class="card-header">
+                <div>
+                    <img src="{{ review_obj['user_picture'] }}"
+                      style="width:50px;height:50px;border-radius:10px;">
+                   <h5 style="display:inline-block;margin-left: 15px;">{{ review_obj['user_name'] }}</h5>
+                </div>
+                <p style="float:right;">{{ review_obj['review_date'] }}</p>
+                </div>
+                <div class="card-body">
+                 {% if 'review_title' in review_obj.keys() %}
+                    <h5 class="card-title">{{ review_obj['review_title'] }}</h5>
+                 {% endif %}
+                    <p class="card-text">
+                   <img src='{{ url_for('static', filename='img/sentiment1.png') }}'
+                      style="margin-left: 15px;width:40px;height:40px;float:right;display: block;text-align: center;display: block;" alt="{{ review_obj['review_sentiment'] }}">{{ review_obj['review_data'] }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if 'publish_date' in reviews_list[0].keys() %}
+            {% for mention_obj in reviews_list %}
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <img src=""
+                      style="width:50px;height:50px;border-radius:10px;" alt="{{ mention_obj['mention_category'] }}">
+                             {% set tlist = mention_obj['site_url'].split('/') %}
+                             {% set short_url = ''.join(tlist[:3]) %}
+                            <a style="display:inline-block;margin-left: 15px;" href="{{ mention_obj['site_url'] }}">{{ short_url }}</a>
+                        </div>
+                        <p style="float:right;">{{ mention_obj['publish_date'] }}</p>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ mention_obj['site_title'] }}</h5>
+                         <p class="card-text">
+                   <img src='{{ url_for('static', filename='img/sentiment1.png') }}'
+                      style="margin-left: 15px;width:40px;height:40px;float:right;display: block;text-align: center;display: block;" alt="{{ mention_obj['mention_sentiment'] }}">{{ mention_obj['mention_text'] }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+
+
+
+
+
+
+   </div>
+
+
+   <!--=================================
+         MAIN CONTENT -->
+   <!--=================================
+         Footer -->
+   <footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;" class="main-bg pt-5 pb-5">
+      <div class="container">
+         <div class="row">
+            <div class="col-auto mr-auto">
+               <div>
+                  <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}" style="width: 100;height:50px;margin-bottom: 0%;"
+                        alt="img"></a>
+               </div>
+            </div>
+            <div class="col-auto">
+               <ul class=" list-inline" style="margin-top: 10px;">
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('features_endpoint') }}">Features</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <hr style="background-color: white;height:3px;">
+         <div class="pt-3">
+            <div class="row justify-content-between">
+               <div class="col-auto mr-auto">
+                  <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                           target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                              src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </footer>
+   <!--=================================
+         Footer -->
+
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+   <!-- main -->
+   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <!-- Custom -->
+   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+
+
+</body>
+
+</html>

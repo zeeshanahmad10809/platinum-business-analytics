@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <!-- Required meta tags -->
+
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Login</title>
+   <!-- Favicon -->
+   <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+   <!-- Typography CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+   <!-- Style CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- Responsive CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+</head>
+
+<body class=" app-no-scrollbar">
+   <!--=================================
+         Header -->
+   <header id="header" class="">
+      <div class="container">
+         <div class="row align-items-center">
+            <div class="col-lg-9">
+               <nav class="navbar navbar-expand-lg navbar-light">
+                  <a class="navbar-brand" href="{{ url_for('home_endpoint') }}">
+                     <img class="logo" src="{{ url_for('static', filename='icon/Logo1.png') }}" alt="image">
+                     <img class="logo-stiky" src="{{ url_for('static', filename='icon/logo-stiky.png') }}" alt="image">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('home_endpoint') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('features_endpoint') }}">Features</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                        </li>
+                     </ul>
+                  </div>
+               </nav>
+            </div>
+            <div class="col-lg-3 text-right">
+               <ul class="login">
+                  <li class="d-inline"><a href="{{ url_for('login_endpoint') }}">Login</a></li>
+                  <li class="d-inline active"><a href="{{ url_for('register_endpoint') }}">Register</a></li>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </header>
+   <!--=================================
+         Header -->
+   <!--=================================
+         Banner -->
+   <div id="banner" class="banner">
+      <div class="banner-text" style="padding-top: 150px;padding-bottom:50px;">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12" style="margin-bottom: 0px;">
+                  <h1 style="font-size: xx-large;" class="text-uppercase">Login</h1>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <section class="iq-login-regi">
+        {% if reset_link_sent == true %}
+                <div id='parent' style='width: 100%;text-align:center;margin-top:30px;margin-bottom: 30px;'>
+	                <div id='child' class="alert alert-success" style='width:700px;margin:0px auto;'>
+                        <strong>Reset link sent!</strong> Please check your email to reset password.
+                    </div>
+                </div>
+            {% endif %}
+            {% if is_password_changed == true %}
+                <div id='parent' style='width: 100%;text-align:center;margin-top:30px;margin-bottom: 30px;'>
+	                <div id='child' class="alert alert-success" style='width:700px;margin:0px auto;'>
+                        <strong>Password changed!</strong> You can now login with your new password.
+                    </div>
+                </div>
+            {% endif %}
+      <div class="container">
+
+         <div class="row align-items-center" style="box-shadow: 2px 2px 2px 2px grey;">
+            <div class="col-lg-6 col-md-12 col-sm-12 text-center"
+               style="background-color: #0f93fe;height:650px;width:250;">
+               <h2 style="margin-top: 10%;">Login</h2>
+               <img class="img-fluid banner-img" style="margin-top:40px;" src="{{ url_for('static', filename='img/47206-01.png') }}" alt="image">
+
+            </div>
+
+
+
+            <div class="col-lg-6 col-md-12 col-sm-12 r-mt3 form-background">
+               <form style="border-color:transparent;" action="/login/" method="POST" accept-charset="utf-8">
+                  <h2 style="text-align:center;margin-bottom: 20px;">Welcome</h2>
+                  <div class="form-group">
+                     <label class="mb-0" for="exampleInputEmail1">Email Address</label>
+                     <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Email" required>
+                  </div>
+                  <div class="form-group">
+                     <label class="mb-0" for="exampleInputPassword1">Password</label>
+                     <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="Password" required>
+                  </div>
+                   {% if invalid_cred == true %}
+                       <div class="error wrong-data">Incorrect email or password!</div>
+                   {% endif %}
+                  <div class="row">
+                     <div class="col-sm-6">
+
+                     </div>
+                     <div class="col-sm-6 text-right">
+                        <a href="{{ url_for('request_reset_endpoint') }}" style="font-size: 13px;" class="link">Forgot Password?</a>
+                     </div>
+                  </div>
+                  <button type="submit" class="button mt-2 mb-2 w-100">Login</button>
+                  <div class="text-center">
+                     <div class="small-text mt-1 link">Don't Have an Account? <a href="{{ url_for('register_endpoint') }}"
+                           style="color: #0f93fe;">Register Now</a>
+                     </div>
+                  </div>
+               </form>
+            </div>
+
+         </div>
+      </div>
+   </section>
+
+
+   <!--=================================
+         MAIN CONTENT -->
+   <!--=================================
+         Footer -->
+<footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;" class="main-bg pt-5 pb-5">
+      <div class="container">
+         <div class="row">
+            <div class="col-auto mr-auto">
+               <div>
+                  <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}" style="width: 100;height:50px;margin-bottom: 0%;"
+                        alt="img"></a>
+               </div>
+            </div>
+            <div class="col-auto">
+               <ul class=" list-inline" style="margin-top: 10px;">
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('features_endpoint') }}">Features</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <hr style="background-color: white;height:3px;">
+         <div class="pt-3">
+            <div class="row justify-content-between">
+               <div class="col-auto mr-auto">
+                  <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                           target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                              src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </footer>
+   <!--=================================
+         Footer -->
+
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+   <!-- main -->
+   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <!-- Custom -->
+   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+</body>
+
+</html>

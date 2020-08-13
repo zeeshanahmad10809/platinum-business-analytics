@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Required meta tags -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Panel</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+
+
+
+</head>
+
+<body style="min-width: 960px; margin: 0 auto;" >
+
+    <div style="height: 1420px;background-color: #0f93fe;padding-top: 70px;position: relative;">
+        <h1 style="font-size: xx-large;color: #ffffff;text-align: center;font-weight: bold;margin-top:50px;" class="text-uppercase">
+            Platinum Business Analytics</h1>
+        <img style="width: 200px;height: 100px;margin-left: 40%;margin-top: 200px;" src="http://127.0.0.1:5000/uploads/Logo1.png" />
+        <h1 style="font-size: xx-large;color: #ffffff;text-align: center;font-weight: bold;margin-top:450px;" class="text-uppercase">
+            {{ project_name }}</h1>
+        <h3 style="font-size: large;color: #ffffff;text-align: center;font-weight: bold;margin-top:20px;">Date Range: {{ date_range }}</h3>
+
+    </div>
+    <p style="page-break-before: always" ></p>
+
+    <div style="height: 1400px;position: relative;">
+
+        <div style="width: 80%">
+            {% if 'review_date' in reviews_list[0].keys() %}
+            {% for review_obj in reviews_list %}
+                <div class="card" style="margin-top: 30px;">
+                    <div class="card-header" style="height: 70px;">
+                <div>
+                    <img src="{{ review_obj['user_picture'] }}"
+                      style="width:30px;height:30px;border-radius:10px;">
+                   <h5 style="display:inline-block;margin-left: 15px;">{{ review_obj['user_name'] }}</h5>
+                </div>
+                <p style="">{{ review_obj['review_date'] }}</p>
+                </div>
+                <div class="card-body" style="height: 60px;">
+                 {% if 'review_title' in review_obj.keys() %}
+                    <h5 class="card-title">{{ review_obj['review_title'] }}</h5>
+                 {% endif %}
+                    <p class="card-text">
+                        {% if review_obj['review_sentiment'] == '0' %}
+                            <div style="float:right;border: 1.5px solid #ff0000;color: #ff0000;padding:8px;display: inline-block;border-radius: 6px;font-size: small;">
+        Negative
+    </div>
+                        {% elif review_obj['review_sentiment'] == '1' %}
+                            <div style="float:right;border: 1.5px solid #c41e3a;color: #c41e3a;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Negative
+    </div>
+                        {% elif review_obj['review_sentiment'] == '2' %}
+                            <div style="float:right;border: 1.5px solid #c0c0c0;color: #c0c0c0;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Neutral
+    </div>
+                        {% elif review_obj['review_sentiment'] == '3' %}
+                            <div style="float:right;border: 1.5px solid #4f7942;color: #4f7942;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Positive
+    </div>
+                        {% elif review_obj['review_sentiment'] == '4' %}
+                            <div style="float:right;border: 1.5px solid #228b22;color: #228b22;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Positive
+    </div>
+                        {% endif %}
+
+                   {{ review_obj['review_data'] }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if 'publish_date' in reviews_list[0].keys() %}
+            {% for mention_obj in reviews_list %}
+                <div class="card" style="margin-top:30px;">
+                    <div class="card-header" style="height: 70px;">
+                        <div>
+                            <img src=""
+                      style="width:30px;height:30px;border-radius:10px;" alt="{{ mention_obj['mention_category'] }}">
+                             {% set tlist = mention_obj['site_url'].split('/') %}
+                             {% set short_url = ''.join(tlist[:3]) %}
+                            <a style="display:inline-block;margin-left: 15px;" href="{{ mention_obj['site_url'] }}">{{ short_url }}</a>
+                        </div>
+                        <p style="">{{ mention_obj['publish_date'] }}</p>
+                    </div>
+                    <div class="card-body" style="height: 60px;">
+                        <h5 class="card-title">{{ mention_obj['site_title'] }}</h5>
+                         <p class="card-text">
+                        {% if mention_obj['mention_sentiment'] == '0' %}
+                            <div style="float:right;border: 1.5px solid #ff0000;color: #ff0000;padding:8px;display: inline-block;border-radius: 6px;font-size: small;">
+        Negative
+    </div>
+                        {% elif mention_obj['mention_sentiment'] == '1' %}
+                            <div style="float:right;border: 1.5px solid #c41e3a;color: #c41e3a;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Negative
+    </div>
+                        {% elif mention_obj['mention_sentiment'] == '2' %}
+                            <div style="float:right;border: 1.5px solid #c0c0c0;color: #c0c0c0;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Neutral
+    </div>
+                        {% elif mention_obj['mention_sentiment'] == '3' %}
+                            <div style="float:right;border: 1.5px solid #4f7942;color: #4f7942;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Positive
+    </div>
+                        {% elif mention_obj['mention_sentiment'] == '4' %}
+                            <div style="float:right;border: 1.5px solid #228b22;color: #228b22;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Positive
+    </div>
+                        {% endif %}
+
+                   {{ mention_obj['mention_text'] }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        </div>
+
+
+        <div style="position: absolute;bottom: 0;width: 100%;">
+            <div style="height: 2px;background-color: black;border-color: black;"></div>
+            <p style="font-size: medium;float: right;">2</p>
+        </div>
+    </div>
+    <p style="page-break-before: always" ></p>
+
+    <div style="height: 1400px;position: relative;">
+        <div
+                style=";"
+                class="card">
+                <div class="card-body">
+                    <h1>Time Series graph</h1>
+                    <img  src="{{ url_for('static', filename="graph/"+base_url+"time-series-graph.svg") }}">
+
+                </div>
+
+            </div>
+
+            <div
+                style="margin-top:50px;"
+                class="card">
+                <div class="card-body">
+                    <h1>Bar Chart</h1>
+                    <img  src="{{ url_for('static', filename="graph/"+base_url+"bar-graph.svg") }}">
+
+
+                </div>
+
+            </div>
+
+         <div style="position: absolute;bottom: 0;width: 100%;">
+            <div style="height: 2px;background-color: black;border-color: black;"></div>
+            <p style="font-size: medium;float: right;">3</p>
+        </div>
+
+    </div>
+
+    <div style="height: 1400px;position: relative;">
+
+         <div
+                style="margin-top:50px;"
+                class="card">
+                <div class="card-body">
+                    <h1>Pie Chart</h1>
+                    <img  src="{{ url_for('static', filename="graph/"+base_url+"doughnat-graph.svg") }}">
+
+
+                </div>
+
+            </div>
+        <div style="position: absolute;bottom: 0;width: 100%;">
+            <div style="height: 2px;background-color: black;border-color: black;"></div>
+            <p style="font-size: medium;float: right;">4</p>
+        </div>
+    </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+</body>
+
+</html>

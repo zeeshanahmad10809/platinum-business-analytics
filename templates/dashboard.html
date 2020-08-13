@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <!-- Required meta tags -->
+
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+   <title>Dashboard</title>
+   <!-- Favicon -->
+   <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+   <!-- Typography CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+   <!-- Style CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- Responsive CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+</head>
+
+<body style="min-width: 960px; margin: 0 auto;"  class=" app-no-scrollbar">
+   <!--=================================
+         Header -->
+   <header id="header" class="">
+      <div class="container">
+         <div class="row align-items-center">
+            <div class="col-lg-9">
+               <nav class="navbar navbar-expand-lg navbar-light">
+                  <a class="navbar-brand" href="{{ url_for('home_endpoint') }}">
+                     <img class="logo" src="{{ url_for('static', filename='icon/Logo1.png') }}" alt="image">
+                     <img class="logo-stiky" src="{{ url_for('static', filename='icon/logo-stiky.png') }}" alt="image">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('home_endpoint') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('features_endpoint') }}">Features</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link active" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                        </li>
+                     </ul>
+                  </div>
+               </nav>
+            </div>
+            <div class="col-lg-3 text-right">
+               <ul class="login">
+                   {% if 'user' in session.keys()  %}
+                   <li class="d-inline"><a href="{{ url_for('logout_endpoint') }}">Logout</a></li>
+                   {% else %}
+                  <li class="d-inline"><a href="{{ url_for('login_endpoint') }}">Login</a></li>
+                  <li class="d-inline active"><a href="{{ url_for('register_endpoint') }}">Register</a></li>
+                   {% endif %}
+               </ul>
+            </div>
+         </div>
+      </div>
+   </header>
+   <!--=================================
+         Header -->
+   <!--=================================
+         Banner -->
+   <div id="banner" class="banner">
+      <div class="banner-text" style="padding-top: 150px;padding-bottom:50px;">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12" style="margin-bottom: 0px;">
+                  <h1 style="font-size: xx-large;" class="text-uppercase">Dashboard</h1>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="card" style="margin-left:15%;margin-top:5%;margin-right:15%;margin-bottom:5%;">
+      <div class="card-body">
+         <h2 style="display: inline-block;">Project List</h2>
+         <a style="background-color: #0f93fe;color:white;padding: 5px 8px 5px 8px;float:right;border-radius: 5px;"
+            href="{{ url_for('create_new_project') }}">Create
+            Project</a>
+
+         <table class="table projects-table" style="margin-top:20px;">
+            <thead>
+               <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">New Data</th>
+                  <th scope="col">Created</th>
+                  <th scope="col"></th>
+               </tr>
+            </thead>
+            <tbody>
+            {% if project_list |length > 0 %}
+            {% for project in project_list %}
+                <tr>
+                    <td><a target="_blank" style="color:black;" href="{{ url_for('panel', project_name=project['project_name'],
+                            project_category=project['project_category']) }}">{{ project['project_name'] }}</a></td>
+                    <td>{{ project['project_category'] }}</td>
+                    <td>{{ project['update_count'] }}</td>
+                    <td>{{ project['date'] }}</td>
+                    <td><a href="{{ url_for('delete_project', project_name=project['project_name'],
+                            project_category=project['project_category']) }}" style="color: #0f93fe;text-decoration: underline;">Delete</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+         </table>
+
+      </div>
+   </div>
+
+
+   <!--=================================
+         MAIN CONTENT -->
+   <!--=================================
+         Footer -->
+   <footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;" class="main-bg pt-5 pb-5">
+      <div class="container">
+         <div class="row">
+            <div class="col-auto mr-auto">
+               <div>
+                  <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}" style="width: 100;height:50px;margin-bottom: 0%;"
+                        alt="img"></a>
+               </div>
+            </div>
+            <div class="col-auto">
+               <ul class=" list-inline" style="margin-top: 10px;">
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#b9b9b9'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#b9b9b9'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('features_endpoint') }}">Features</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <hr style="background-color: white;height:3px;">
+         <div class="pt-3">
+            <div class="row justify-content-between">
+               <div class="col-auto mr-auto">
+                  <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                           target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                              src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </footer>
+   <!--=================================
+         Footer -->
+
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+   <!-- main -->
+   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <!-- Custom -->
+   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+</body>
+
+</html>

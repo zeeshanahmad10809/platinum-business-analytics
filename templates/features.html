@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <!-- Required meta tags -->
+
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Features</title>
+<!-- Favicon -->
+   <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+   <!-- Typography CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+   <!-- Style CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- Responsive CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+</head>
+
+<body class=" app-no-scrollbar">
+   <!--=================================
+         Header -->
+   <header id="header" class="">
+      <div class="container">
+         <div class="row align-items-center">
+            <div class="col-lg-9">
+               <nav class="navbar navbar-expand-lg navbar-light">
+                  <a class="navbar-brand" href="{{ url_for('home_endpoint') }}">
+                     <img class="logo" src="{{ url_for('static', filename='icon/Logo1.png') }}" alt="image">
+                     <img class="logo-stiky" src="{{ url_for('static', filename='icon/logo-stiky.png') }}" alt="image">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('home_endpoint') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link active" href="{{ url_for('features_endpoint') }}">Features</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                        </li>
+                     </ul>
+                  </div>
+               </nav>
+            </div>
+            <div class="col-lg-3 text-right">
+               <ul class="login">
+                   {% if 'user' in session.keys()  %}
+                   <li class="d-inline"><a href="{{ url_for('logout_endpoint') }}">Logout</a></li>
+                   {% else %}
+                  <li class="d-inline"><a href="{{ url_for('login_endpoint') }}">Login</a></li>
+                  <li class="d-inline active"><a href="{{ url_for('register_endpoint') }}">Register</a></li>
+                   {% endif %}
+               </ul>
+            </div>
+         </div>
+      </div>
+   </header>
+   <!--=================================
+         Header -->
+   <!--=================================
+         Banner -->
+   <div id="banner" class="banner">
+      <div class="banner-text" style="padding-top: 150px;padding-bottom:50px;">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12" style="margin-bottom: 0px;">
+                  <h1 style="font-size: xx-large;" class="text-uppercase">Features</h1>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="banner" class="banner" style="background-color: transparent;">
+      <div class="banner-text">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-7 col-md-12 col-sm-12">
+                  <img class="img-fluid" style="right:-45px;margin-top:120px;" src="{{ url_for('static', filename='img/what-is-ba.png') }}"
+                     alt="image">
+               </div>
+               <div class="col-lg-5 col-md-12 col-sm-12">
+                  <h1 style="font-size: x-large;color:#222222;" class="text-uppercase">Reviews or Mentions Collection
+                  </h1>
+                  <h3 class="text-justify" style="color: #222222;">The latest data is collected from Amazon, Rotten Tomatoes and other websites that appear as google search results. It collects reviews from Amazon, Rotten Tomatoes & the phrases that contain keyword in the websites that appear as google search results.</h3>
+
+               </div>
+
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="banner" class="banner" style="background-color: #F5F5F5;">
+      <div class="banner-text">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12">
+                  <h1 style="font-size: x-large;color:#222222;" class="text-uppercase">Data Preprocessing</h1>
+                  <h3 class="text-justify" style="color: #222222;">The next step after data collection is to prepare the data so that it can feed to algorithms. The data is prepared in efficient way and only the useful data is fed to the algorithm to improve overall performance.</h3>
+
+               </div>
+               <div class="col-lg-7 col-md-12 col-sm-12 text-right">
+                  <img class="img-fluid banner-img" style="margin-top:80px;" src="{{ url_for('static', filename='img/how-it-helps.png') }}"
+                     alt="image">
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="banner" class="banner" style="background-color: transparent;">
+      <div class="banner-text">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-7 col-md-12 col-sm-12">
+                  <img class="img-fluid" style="right:-45px;margin-top:125px;" src="{{ url_for('static', filename='img/why-it-important.png') }}"
+                     alt="image">
+               </div>
+               <div class="col-lg-5 col-md-12 col-sm-12">
+                  <h1 style="font-size: x-large;color:#222222;" class="text-uppercase">Fine Grained Sentiment Analysis
+                  </h1>
+                  <h3 class="text-justify" style="color:#222222;">Fine Grained Sentiment Analysis algorithms detect sentiment at sentence & phrase level instead of document level. This way we can get better insights and more refined results. The sentences are categorized into five categories positive, partially positive, neutral, partially negative & negative.</h3>
+
+               </div>
+
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="banner" class="banner" style="background-color: #F5F5F5;">
+      <div class="banner-text">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-7 col-md-12 col-sm-12">
+                  <img class="img-fluid" style="right:-45px;margin-top:125px;" src="{{ url_for('static', filename='img/why-it-important.png') }}"
+                     alt="image">
+               </div>
+               <div class="col-lg-5 col-md-12 col-sm-12">
+                  <h1 style="font-size: x-large;color:#222222;" class="text-uppercase">Visualization
+                  </h1>
+                  <h3 class="text-justify" style="color:#222222;">The most widely used and the efficient way of analyzing and intrepreting the data or results is to visualize. That way we can get better insights in no time & also useful for novice team members. The system provides various types of graphs to better understand your product and track feedback & generate visualization reports.</h3>
+
+               </div>
+
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+   <footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;" class="main-bg pt-5 pb-5">
+      <div class="container">
+         <div class="row">
+            <div class="col-auto mr-auto">
+               <div>
+                  <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}" style="width: 100;height:50px;margin-bottom: 0%;"
+                        alt="img"></a>
+               </div>
+            </div>
+            <div class="col-auto">
+               <ul class=" list-inline" style="margin-top: 10px;">
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('features_endpoint') }}">Features</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <hr style="background-color: white;height:3px;">
+         <div class="pt-3">
+            <div class="row justify-content-between">
+               <div class="col-auto mr-auto">
+                  <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                           target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                              src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </footer>
+   <!--=================================
+         Footer -->
+
+   <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+   <!-- main -->
+   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <!-- Custom -->
+   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+</body>
+
+</html>

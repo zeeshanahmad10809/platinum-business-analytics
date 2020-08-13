@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Panel</title>
+
+    <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+
+
+
+    <script>
+        var user_email, project_name, project_category;
+        user_email = "{{ user_email|string }}";
+        project_name = "{{ project_name|string }}";
+        project_category = "{{ project_category|string }}";
+        console.log(project_name);
+        console.log(project_category);
+        var project_collection_size = 0;
+        var current_page = 1;
+        var page_received_size;
+        var sentiment_filter;
+        var PAGE_SIZE = 21;
+        var start_datepicker_value = null;
+        var end_datepicker_value = null;
+
+        function getSentimentTextFromMap(sentiment_no){
+            var dict = {};
+            dict['0'] = "Negative";
+            dict['1'] = "Somewhat Negative";
+            dict['2'] = "Neutral";
+            dict['3'] = "Somewhat Positive";
+            dict['4'] = "Positive";
+
+            return dict[sentiment_no];
+        }
+
+        function getFormatedDate(unformatted_date){
+            unformatted_date = unformatted_date.toString();
+            var splited_date = unformatted_date.split(" ");
+            var date = splited_date[1]+" "+splited_date[2]+", "+splited_date[3];
+            return date;
+        }
+
+        function getSentimentTag(sentiment_no){
+             var sentiment_tag;
+            if(sentiment_no == '0'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #ff0000;color: #ff0000;padding:8px;display: inline-block;border-radius: 6px;font-size: small;">
+        Negative
+    </div>`;
+            }
+            else if(sentiment_no == '1'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #c41e3a;color: #c41e3a;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Negative
+    </div>`;
+            }
+            else if(sentiment_no == '2'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #c0c0c0;color: #c0c0c0;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Neutral
+    </div>`;
+            }
+            else if(sentiment_no == '3'){
+                sentiment_tag = ` <div style="float:right;border: 1.5px solid #4f7942;color: #4f7942;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Partially Positive
+    </div>`;
+            }
+            else if(sentiment_no == '4'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #228b22;color: #228b22;padding:8px;display: inline-block;border-radius: 6px;font-size:small;">
+        Positive
+    </div>`;
+            }
+            return sentiment_tag;
+
+        }
+
+        function getGeneralContainer(mention_category, site_url, publish_date, site_title, mention_sentiment, mention_text){
+            var tempArr = site_url.split("/");
+            publish_date = getFormatedDate(publish_date);
+            var temp_title_arr = site_title.split(" ");
+            if (temp_title_arr.length > 3)
+                site_title = temp_title_arr.slice(0, 3).join(" ")+"...";
+            var text_arr = mention_text.split("[**break**]");
+            var temp_mention_text = "";
+            for (var i=0; i<text_arr.length; i++){
+                var temp = text_arr[i];
+                /*if(temp[(temp.length)-1] == '.'){
+                    if(temp.length > 100){
+                        temp_mention_text += (temp.slice(0, 101)+"[...]");
+                    }
+                    else{
+                        temp_mention_text += temp;
+                    }
+                }*/
+                var dot_split_arr = temp.split(".");
+                var dot_joined = dot_split_arr.join(" ");
+                if(dot_joined.length > 100){
+                    temp_mention_text += (dot_joined.slice(0, 101)+"[...]");
+                }
+                else{
+                    temp_mention_text += dot_joined;
+                }
+            }
+            console.log(temp_mention_text.slice(-5));
+            if(temp_mention_text.slice(-5) != "[...]")
+                mention_text = temp_mention_text+"...";
+            else
+                mention_text = temp_mention_text;
+
+            var sentiment_tag = getSentimentTag(mention_sentiment);
+
+            var img_src = "{{ url_for('static', filename='img/web.png') }}";
+            if(mention_category == 'news'){
+                img_src = "{{ url_for('static', filename='img/news.png') }}";
+            }
+            else if(mention_category == 'blog'){
+                img_src = "{{ url_for('static', filename='img/blog.png') }}";
+            }
+            else if(mention_category == 'podcast'){
+                img_src = "{{ url_for('static', filename='img/podcast.png') }}";
+            }
+
+
+            var generalHTML = `<div class="card">
+    <div class="card-header">
+        <div>
+            <img src="`+ img_src +`" style="width:50px;height:50px;border-radius:10px;" alt="`+mention_category+`">
+            <a style="display:inline-block;margin-left: 15px;" href="`+site_url+`">`+tempArr[2]+`</a>
+        </div>
+        <p style="float:right;">`+publish_date+`</p>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">`+site_title+`</h5>
+        <p class="card-text justify-text">`+sentiment_tag+``+mention_text+`</p>
+    </div>
+</div>`;
+            return generalHTML;
+
+
+        }
+
+
+        function getMovieContainer(user_picture, user_name, review_date, review_sentiment, review_data){
+            review_date = getFormatedDate(review_date);
+
+            var sentiment_tag = getSentimentTag(review_sentiment);
+
+
+            var movieHTML = `<div class="card">
+    <div class="card-header">
+        <div>
+            <img src="`+user_picture+`"
+                      style="width:50px;height:50px;border-radius:10px;">
+            <h5 style="display:inline-block;margin-left: 15px;">`+user_name+`</h5>
+        </div>
+        <p style="float:right;">`+review_date+`</p>
+    </div>
+    <div class="card-body">
+        <p class="card-text">
+                    <p class="card-text">`+sentiment_tag+``+review_data+`</p>
+
+    </div>
+</div>`;
+            return movieHTML;
+        }
+
+        function getProductContainer(user_picture, user_name, review_title, review_date, review_sentiment, review_data){
+            review_date = getFormatedDate(review_date);
+
+            var sentiment_tag = getSentimentTag(review_sentiment);
+
+
+            var productHTML = `<div class="card">
+    <div class="card-header">
+        <div>
+            <img src="`+user_picture+`"
+                      style="width:50px;height:50px;border-radius:10px;">
+            <h5 style="display:inline-block;margin-left: 15px;">`+user_name+`</h5>
+        </div>
+        <p style="float:right;">`+review_date+`</p>
+    </div>
+    <div class="card-body">
+            <h5 class="card-title">`+review_title+`</h5>
+        <p class="card-text">
+                    <p class="card-text">`+sentiment_tag+``+review_data+`</p>
+    </div>
+</div>`;
+            return productHTML;
+        }
+
+        function resultFilter(value){
+            //alert(value);
+            if(value == 6){
+                sentiment_filter = null;
+            }
+            else if(value == 5){
+                sentiment_filter = '4';
+            }
+            else if(value == 4){
+                sentiment_filter = '3';
+
+            }
+            else if(value == 3){
+                sentiment_filter = '2';
+
+            }
+            else if(value == 2){
+                sentiment_filter = '1';
+
+            }
+            else if(value == 1){
+                sentiment_filter = '0';
+
+            }
+            current_page = 1;
+            $("#prev_btn").hide();
+            getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+            setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     //$("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);
+            console.log(sentiment_filter);
+
+        }
+
+
+        function renderTimeSeries(time_series_data) {
+
+            $("#time_series_container").empty();
+            $("#time_series_container").append('<canvas id="time_series"></canvas>');
+            var ctx = document.getElementById("time_series").getContext('2d');
+
+            if(time_series_data == null){
+                //alert("null");
+                var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+            });
+                return;
+            }
+
+
+            var labels = time_series_data['labels'];
+            var data = time_series_data['data'];
+            var temp_datasets = [];
+
+            if(data.hasOwnProperty("negative")){
+                temp_datasets.push({
+                    label: 'Negative',
+                    data: data['negative'],
+                    borderColor: 'rgba(242, 28, 39, 1)',
+                    backgroundColor: 'rgba(242, 28, 39, 0.5)',
+                })
+            }
+            if(data.hasOwnProperty("neutral")){
+                temp_datasets.push({
+                    label: 'Neutral',
+                    data: data['neutral'],
+                    borderColor: 'rgba(192, 192, 192, 1)',
+                    backgroundColor: 'rgba(192, 192, 192, 0.5)',
+
+                })
+            }
+            if(data.hasOwnProperty("partially_negative")){
+                temp_datasets.push({
+                    label: 'Partially Negative',
+                    data: data['partially_negative'],
+                    borderColor: 'rgba(251, 107, 107, 1)',
+                    backgroundColor: 'rgba(251, 107, 107, 0.5)',
+
+                })
+            }
+            if(data.hasOwnProperty("partially_positive")){
+                temp_datasets.push({
+                    label: 'Partially Positive',
+                    data: data['partially_positive'],
+                    borderColor: 'rgba(140, 239, 156, 1)',
+                    backgroundColor: 'rgba(140, 239, 156, 0.4)',
+
+                })
+            }
+            if(data.hasOwnProperty("positive")){
+                temp_datasets.push({
+                    label: 'Positive',
+                    data: data['positive'],
+                    borderColor: 'rgba(83, 239, 115, 1)',
+                    backgroundColor: 'rgba(83, 239, 115, 0.5)',
+
+                })
+            }
+
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: temp_datasets
+                },
+            });
+
+
+        }
+
+        function renderBarChart(bar_pie_data) {
+            $("#bar_chart_container").empty();
+            $("#bar_chart_container").append('<canvas id="bar_chart"></canvas>');
+            var ctx = document.getElementById("bar_chart").getContext('2d');
+
+            if(bar_pie_data == null){
+                //alert("null");
+                var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "",
+                        backgroundColor: [],
+                        data: []
+                    }]
+                    },
+                });
+                return;
+            }
+
+            var labels = [];
+            var data = bar_pie_data;
+            var backgroundColor = [];
+            var temp_data = [];
+
+
+            if(data.hasOwnProperty("negative")){
+                labels.push("Negative");
+                backgroundColor.push('rgba(242, 28, 39, 0.5)');
+                temp_data.push(data['negative']);
+
+            }
+            else{
+                labels.push("Negative");
+                backgroundColor.push('rgba(242, 28, 39, 0.5)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("partially_negative")){
+                labels.push("Partially Negative");
+                backgroundColor.push('rgba(251, 107, 107, 0.5)');
+                temp_data.push(data['partially_negative']);
+
+            }
+            else{
+                labels.push("Partially Negative");
+                backgroundColor.push('rgba(251, 107, 107, 0.5)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("neutral")){
+                labels.push("Neutral");
+                backgroundColor.push('rgba(192, 192, 192, 0.5)');
+                temp_data.push(data['neutral']);
+            }
+            else{
+                labels.push("Neutral");
+                backgroundColor.push('rgba(192, 192, 192, 0.5)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("partially_positive")){
+                labels.push("Partially Positive");
+                backgroundColor.push('rgba(140, 239, 156, 0.5)');
+                temp_data.push(data['partially_positive']);
+            }
+            else{
+                labels.push("Partially Positive");
+                backgroundColor.push('rgba(140, 239, 156, 0.5)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("positive")){
+                labels.push("Positive");
+                backgroundColor.push('rgba(83, 239, 115, 0.5)');
+                temp_data.push(data['positive']);
+
+            }
+            else{
+                labels.push("Positive");
+                backgroundColor.push('rgba(83, 239, 115, 0.5)');
+                temp_data.push(0);
+            }
+
+
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "No of reviews or mentions",
+                        backgroundColor: backgroundColor,
+                        data: temp_data,
+                    }]
+                },
+            });
+
+
+
+        }
+
+        function renderPieChart(bar_pie_data) {
+            $("#pie_chart_container").empty();
+            $("#pie_chart_content_table_body").empty();
+
+            $("#pie_chart_container").append('<canvas id="pie_chart"></canvas>');
+            var ctx = document.getElementById("pie_chart").getContext('2d');
+
+            if(bar_pie_data == null){
+                //alert("null");
+                var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "",
+                        backgroundColor: [],
+                        data: []
+                    }]
+                    },
+                });
+                return;
+            }
+
+            var labels = [];
+            var data = bar_pie_data;
+            var backgroundColor = [];
+            var temp_data = [];
+
+
+            for(var key in data){
+
+                if(data.hasOwnProperty(key))
+                {
+                    var cap_key = "";
+                    if(key == 'negative'){
+                        cap_key = 'Negative';
+                    }
+                    else if(key == 'partially_negative'){
+                        cap_key = 'Partially Negative';
+                    }
+                    else if(key == 'neutral'){
+                        cap_key = 'Neutral';
+                    }
+                    else if(key == 'partially_positive'){
+                        cap_key = 'Partially Positive';
+                    }
+                    else if(key == 'positive'){
+                        cap_key = 'Positive';
+                    }
+
+                    $("#pie_chart_content_table_body").append(`<tr>
+                    <td style="padding-left: 15px;">`+cap_key+`</td>
+                    <td style="padding-left: 180px;">`+data[key]+`</td>
+                </tr>`)
+                }
+
+            }
+
+
+            if(data.hasOwnProperty("negative")){
+                labels.push("Negative");
+                backgroundColor.push('rgba(242, 28, 39, 0.8)');
+                temp_data.push(data['negative']);
+
+            }
+            else{
+                labels.push("Negative");
+                backgroundColor.push('rgba(242, 28, 39, 0.8)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("partially_negative")){
+                labels.push("Partially Negative");
+                backgroundColor.push('rgba(251, 107, 107, 0.8)');
+                temp_data.push(data['partially_negative']);
+
+            }
+            else{
+                labels.push("Partially Negative");
+                backgroundColor.push('rgba(251, 107, 107, 0.8)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("neutral")){
+                labels.push("Neutral");
+                backgroundColor.push('rgba(192, 192, 192, 0.8)');
+                temp_data.push(data['neutral']);
+            }
+            else{
+                labels.push("Neutral");
+                backgroundColor.push('rgba(192, 192, 192, 0.8)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("partially_positive")){
+                labels.push("Partially Positive");
+                backgroundColor.push('rgba(140, 239, 156, 0.8)');
+                temp_data.push(data['partially_positive']);
+            }
+            else{
+                labels.push("Partially Positive");
+                backgroundColor.push('rgba(140, 239, 156, 0.8)');
+                temp_data.push(0);
+            }
+            if(data.hasOwnProperty("positive")){
+                labels.push("Positive");
+                backgroundColor.push('rgba(83, 239, 115, 0.8)');
+                temp_data.push(data['positive']);
+
+            }
+            else{
+                labels.push("Positive");
+                backgroundColor.push('rgba(83, 239, 115, 0.8)');
+                temp_data.push(0);
+            }
+
+
+
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "No of reviews or mentions",
+                        backgroundColor: backgroundColor,
+                        data: temp_data,
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: true,
+                        position: 'right',
+                        align: 'center',
+                        padding: 25
+                    },
+                    tooltips: {
+                        callbacks: {
+                                label: function(tooltipItem, data) {
+                                var dataset = data.datasets[tooltipItem.datasetIndex];
+                                var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                                var total = meta.total;
+                                var currentValue = dataset.data[tooltipItem.index];
+                                var percentage = parseFloat((currentValue/total*100).toFixed(1));
+                                //return currentValue + ' (' + percentage + '%)';
+                                return percentage + '%';
+                                },
+                                title: function(tooltipItem, data) {
+                                    return data.labels[tooltipItem[0].index];
+                                }
+                         }
+                    }
+
+                }
+            });
+        }
+
+        function getDataResponse(project_name, project_category, page_no, sentiment_filter=null, date_start=null, date_end=null){
+            var time_series_data = null;
+            var bar_pie_data = null;
+
+            var page_number = parseInt(page_no);
+            var payload = {};
+            payload['project_name'] = project_name;
+            payload['project_category'] = project_category;
+            if  (sentiment_filter != null){
+                payload['sentiment_filter'] = sentiment_filter;
+            }
+            if  (date_start != null){
+                payload['date_start'] = date_start;
+            }
+            if  (date_end != null){
+                payload['date_end'] = date_end;
+            }
+
+            $.ajax({
+                    url: 'get_page/'+project_category.toLowerCase()+"/"+page_number,
+                    type: 'POST',
+                    data: payload,
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        //alert(response.status);
+                        responseReceived = response;
+                        //alert(response.length)
+                        if (response.length == 0)
+                        {
+                            $("#result_feedback").hide();
+                            $("#reviews_mentions_list").empty();
+                            $("#reviews_mentions_list").append("<h1 >Sorry No data found!</h1>");
+                            $("#prev_btn").hide();
+                            $("#next_btn").hide();
+
+                            console.log("time_series_data: "+time_series_data);
+                            renderTimeSeries(time_series_data);
+                            renderBarChart(bar_pie_data);
+                            renderPieChart(bar_pie_data);
+                            project_collection_size = 0;
+                            $("#generate_report_link").hide();
+
+                            return;
+                        }
+                        $("#result_feedback").show();
+                        $("#generate_report_link").show();
+                        console.log(response);
+                        var data = responseReceived;
+                        if (data.hasOwnProperty("size"))
+                            project_collection_size = parseInt(data['size']);
+                        if (data.hasOwnProperty("time_series_data"))
+                            time_series_data = data['time_series_data']
+                        console.log("time_series_data: "+time_series_data);
+                        if (data.hasOwnProperty("bar_pie_data"))
+                            bar_pie_data = data['bar_pie_data']
+
+                        console.log("project_collection_size: "+project_collection_size);
+                        data = data['data']
+                        page_received_size = data.length;
+                        console.log(data);
+                        $("#reviews_mentions_list").empty();
+                        if(project_category == "General"){
+                            for(var i in data){
+                                console.log(i);
+                                if (i == 20)
+                                    continue;
+                                $("#reviews_mentions_list").append(getGeneralContainer(data[i]['mention_category'],
+                                data[i]['site_url'], data[i]['publish_date'], data[i]['site_title'], data[i]['mention_sentiment'],
+                                data[i]['mention_text']));
+
+                            }
+                        }
+                        else if(project_category == "Movie"){
+                            for(var i in data){
+                                console.log(i);
+                                if (i == 20)
+                                    continue;
+                                $("#reviews_mentions_list").append(getMovieContainer(data[i]['user_picture'],
+                                data[i]['user_name'], data[i]['review_date'],  data[i]['review_sentiment'],
+                                data[i]['review_data']));
+
+                            }
+                        }
+                        else if(project_category == "Product"){
+                            for (var i in data){
+                                console.log(i);
+                                if (i == 20)
+                                    continue;
+                                $("#reviews_mentions_list").append(getProductContainer(data[i]['user_picture'],
+                                data[i]['user_name'], data[i]['review_title'], data[i]['review_date'],  data[i]['review_sentiment'],
+                                data[i]['review_data']));
+
+                            }
+                        }
+
+
+                        if(data.length > 0){
+                            var start_result_index = ((current_page -1) * (PAGE_SIZE-1))+1;
+                            if(page_received_size < 21)
+                                var end_result_index = current_page * (PAGE_SIZE -1) - ((PAGE_SIZE - 1) - page_received_size);
+                            else
+                                var end_result_index = current_page * (PAGE_SIZE -1);
+
+                            //Showing Results 10-20 of 480
+                            $("#result_feedback").text("Showing results "+start_result_index+"-"+end_result_index+" of "+project_collection_size);
+                            /*setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     $("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);*/
+
+                            if(page_number == 1){
+                             //Draw graphs here....
+                             renderTimeSeries(time_series_data);
+                             renderBarChart(bar_pie_data);
+                             renderPieChart(bar_pie_data);
+                         }
+
+
+                        }
+                        else{
+                            //This portion would be called above...
+                            $("#reviews_mentions_list").empty();
+                            $("#reviews_mentions_list").append("<h1>Sorry No data found!</h1>");
+                            $("#prev_btn").hide();
+                            $("#next_btn").hide();
+                        }
+
+
+                    },
+                    error: function () {
+                          alert("error");
+                    }
+                });
+        }
+
+
+        function onStartChange(value) {
+            //alert("Start value: "+value);
+            console.log("date_start: "+value);
+            if(value == ""){
+                start_datepicker_value = null;
+
+            }
+            else{
+                $("#end-date").attr("min", $("#start-date").val());
+                start_datepicker_value = $("#start-date").val();
+            }
+
+            if(start_datepicker_value != null && end_datepicker_value != null){
+                 var tproject_name = "{{ project_name }}";
+                tproject_name = tproject_name.split(" ");
+                tproject_name = tproject_name.join("+");
+                var t_url = "/flask_weasy_generate_pdf?date_start="+start_datepicker_value+"&date_end="+end_datepicker_value+"&project_category="+"{{ project_category }}"+"&project_name="+tproject_name;
+                $("#generate_report_link").attr("href", t_url);
+                current_page = 1;
+                getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     //$("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);
+            }
+            else if(start_datepicker_value == null && end_datepicker_value == null){
+                var tproject_name = "{{ project_name }}";
+                tproject_name = tproject_name.split(" ");
+                tproject_name = tproject_name.join("+");
+                var t_url = "/flask_weasy_generate_pdf?project_name="+tproject_name+"&project_category="+"{{ project_category }}";
+                $("#generate_report_link").attr("href", t_url);
+                current_page = 1;
+                getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     //$("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);
+            }
+
+        }
+
+        function onEndChange(value) {
+            //alert("End value: "+value);
+            console.log(value);
+            if(value == ""){
+                end_datepicker_value = null;
+            }
+            else{
+                $("#start-date").attr("max", $("#end-date").val());
+                end_datepicker_value = $("#end-date").val();
+            }
+            console.log(start_datepicker_value != null && end_datepicker_value != null);
+            console.log(start_datepicker_value+" "+end_datepicker_value);
+           if(start_datepicker_value != null && end_datepicker_value != null){
+                var tproject_name = "{{ project_name }}";
+                tproject_name = tproject_name.split(" ");
+                tproject_name = tproject_name.join("+");
+                var t_url = "/flask_weasy_generate_pdf?date_start="+start_datepicker_value+"&date_end="+end_datepicker_value+"&project_category="+"{{ project_category }}"+"&project_name="+tproject_name;
+                $("#generate_report_link").attr("href", t_url);
+                current_page = 1;
+                getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     //$("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);
+            }
+            else if(start_datepicker_value == null && end_datepicker_value == null){
+                var tproject_name = "{{ project_name }}";
+                tproject_name = tproject_name.split(" ");
+                tproject_name = tproject_name.join("+");
+                var t_url = "/flask_weasy_generate_pdf?project_name="+tproject_name+"&project_category="+"{{ project_category }}";
+                $("#generate_report_link").attr("href", t_url);
+                current_page = 1;
+                getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                setTimeout(function(){
+                                if(project_collection_size < 21){
+                                    $("#prev_btn").hide();
+                                    $("#next_btn").hide();
+                                }
+                                else{
+                                     //$("#prev_btn").show();
+                                    $("#next_btn").show();
+                                }
+                            }, 1000);
+            }
+
+        }
+
+
+
+
+        var page_num = 1;
+        $(document).ready(function () {
+            console.log("heooo");
+
+            //hello();
+            $("#prev_btn").hide();
+            getDataResponse(project_name, project_category, current_page, sentiment_filter);
+            setTimeout(function () {
+                if(project_collection_size < 21){
+                    $("#prev_btn").hide();
+                    $("#next_btn").hide();
+                }
+
+            }, 1000);
+            /*if(page_received_size == 0){
+                $("#reviews_mentions_list").append("<h1>No Results Found!!</h1>");
+                $("#prev_btn").hide();
+                $("#next_btn").hide();
+
+            }
+            else if(page_received_size < 21){
+                $("#prev_btn").hide();
+                $("#next_btn").hide();
+            }*/
+
+
+            /*var numbers = [20000, 14000, 12000, 15000, 18000, 19000, 22000];
+            var labels =  ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+            renderChart(numbers, labels);*/
+
+
+            $("#reviews_link").click(function () {
+                console.log("reviews_link clicked!");
+                $("#reviews_mentions_container").css("display", "block");
+                $("#analysis_container").css("display", "none");
+                $("#reviews_link a").addClass("active");
+                $("#analysis_link a").removeClass("active");
+
+            });
+
+            $("#analysis_link").click(function () {
+                console.log("analysis_link clicked!");
+                $("#reviews_mentions_container").css("display", "none");
+                $("#analysis_container").css("display", "block");
+                $("#reviews_link a").removeClass("active");
+                $("#analysis_link a").addClass("active");
+            });
+
+            $("#next_btn").click(function () {
+                //alert("NEXT clicked!");
+                current_page = current_page+1;
+                getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                setTimeout(function(){
+                     //alert(page_received_size);
+                    if(page_received_size < 21){
+                        $("#next_btn").hide();
+                    }
+                    $("#prev_btn").show();
+
+                }, 50);
+
+
+
+            });
+
+            $("#prev_btn").click(function () {
+                //alert("PREV clicked!");
+                current_page = current_page-1;
+                var recordReceived = getDataResponse(project_name, project_category, current_page, sentiment_filter, start_datepicker_value, end_datepicker_value);
+                if(current_page == 1)
+                    $("#prev_btn").hide();
+                $("#next_btn").show();
+
+
+            });
+
+
+
+
+
+
+
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+
+    <style>
+
+
+.prev-next-paging__wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 32px 0 34px;
+}
+
+#class_label_div > h5{
+    margin-top: 50px;
+}
+
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 385px;
+    padding: 0 5px;
+}
+
+
+a.prev_next {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 0.9;
+  letter-spacing: .5px;
+  font-weight: 500;
+}
+
+
+
+a.previous {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+a.next {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+a.round {
+  border-radius: 4px;
+}
+
+
+a.prev_next:hover {
+  background-color: #0f93fe;
+  color: white;
+    cursor: pointer;
+}
+
+canvas{
+    max-height: 600px; !important;
+}
+
+
+#pie_chart{
+    max-height: 500px; !important;
+    max-width: 500px; !important;
+    float: right; !important;
+}
+
+#report_features {
+  list-style: none;
+}
+
+#report_features li::before {
+  content: "\2022";
+  color: #0f93fe;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+    </style>
+
+
+</head>
+
+<body style="min-width: 960px; margin: 0 auto;" >
+
+    <div style="background-color: #0f93fe;padding-top: 70px;padding-bottom: 70px;">
+        <h1 style="font-size: xx-large;color: #ffffff;text-align: center;font-weight: bold;" class="text-uppercase">
+            {{ project_name }}</h1>
+    </div>
+
+    <div style="margin-top:50px;">
+        <ul class="nav nav-tabs nav-fill">
+            <li id="reviews_link" class="nav-item">
+                <a class="nav-link active" style="font-weight: bold;font-size: large;" href="#">Reviews & Mentions</a>
+            </li>
+            <li id="analysis_link" class="nav-item">
+                <a class="nav-link" style="font-weight: bold;font-size: large;" href="#">Analysis</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <div id="main-container" style="min-height: 1200px;">
+
+        <div class="card" style="margin-top: 40px;margin-bottom: 10px;margin-left:5%;margin-right: 2%;">
+            <div class="card-body" style="padding-top: 50px;padding-bottom: 50px;">
+
+                <input  placeholder="Start Date" id="start-date" onchange="onStartChange(this.value);" type="date" style="width: 30%;margin-left: 5%;border-radius: 5px;">
+                <input  placeholder="End Date" id="end-date" onchange="onEndChange(this.value);" type="date" style="width: 30%;margin-right:5%;float: right;border-radius: 5px;">
+
+            </div>
+
+        </div>
+
+        <div id="reviews_mentions_container" style="padding-left:5%;padding-right:0%;padding-top:2%;padding-bottom:5%;display: block;">
+
+
+            <div
+                style="background-color: transparent;display: inline-block;width: 75%;">
+                <div id="reviews_mentions_list" class="reviews-div">
+
+                     <!--      <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <img src="" style="width:50px;height:50px;border-radius:10px;">
+                            <h5 style="display:inline-block;margin-left: 15px;">Ali</h5>
+                        </div>
+                        <p style="float:right;">24 May, 2019</p>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Very Good</h5>
+                        <p class="card-text">
+                            <img src=''
+                                style="margin-left: 15px;width:40px;height:40px;float:right;display: block;text-align: center;display: block;"
+                                alt="1">Because this is a coronavirus, which usually causes respiratory illness, WHO has
+                            advice to people on[**break**]WHO, China leaders discuss next steps in battle against
+                            coronavirus outbreak[**break**]Statement on the meeting of the International Health
+                            Regulations (2005) Emergency Committee regarding the outbreak of novel coronavirus
+                            (2019-nCoV)[**break**]Coronavirus health topic</p>
+                    </div>
+                </div>
+                -->
+
+                </div>
+
+                <nav class="prev-next-paging__wrapper">
+                    <a id="prev_btn"  class="previous round prev_next">&laquo; PREV</a>
+                    <a id="next_btn"  style="margin-left: 10px;" class="next round prev_next">NEXT &raquo;</a>
+                </nav>
+                <p id="result_feedback" style="float: right;">Showing Results 10-20 of 480</p>
+
+            </div>
+
+
+            <div id="review_mention_filter_section"
+                style="width: 20%;display: inline-block;height:700px;float: right;margin-right:2%;margin-top:2%;"
+                class="card">
+                <div class="card-body">
+                    <div id="class_label_div"  style="width: 70%;display: inline-block;">
+                        <h5>All</h5>
+                        <h5>Positive</h5>
+                        <h5>Partially Postive</h5>
+                        <h5>Neutral</h5>
+                        <h5>Partially Negative</h5>
+                        <h5>Negative</h5>
+                    </div>
+
+                    <input step="1" min="1" value="6" max="6" onchange="resultFilter(this.value)" oninput="resultFilter(this.value)" style="margin-top:80px;margin-left:30px;" type="range" orient="vertical" />
+
+
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <div id="analysis_container" style="width: 100%;background-color:transparent;display: none;padding-left: 5%;padding-right: 5%;padding-top:3%;padding-bottom: 5%;">
+
+            <div
+                style="width: 100%;"
+                class="card">
+                <div class="card-body">
+                    <!--<h1>Time Series graph here...</h1>-->
+                    <div id="time_series_container">
+                        <canvas id="time_series"></canvas>
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+            <div
+                style="width: 100%;margin-top:50px;"
+                class="card">
+                <div class="card-body">
+                    <!--<h1>Bar Chart here...</h1>-->
+                    <div id="bar_chart_container">
+                        <canvas id="bar_chart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                style="width: 100%;margin-top:50px;"
+                class="card">
+                <div class="card-body">
+                    <!--<h1>Pie Chart here...</h1>-->
+                    <table class="table projects-table" style="float:left;width: fit-content;margin-left: 30px;">
+            <thead>
+               <tr>
+                  <th  scope="col">Category</th>
+                  <th style="padding-left: 100px;" scope="col">No of reviews/mentions</th>
+
+               </tr>
+            </thead>
+            <tbody id="pie_chart_content_table_body">
+
+                <!--<tr>
+                    <td style="padding-left: 15px;">Positive</td>
+                    <td style="padding-left: 180px;">0</td>
+                </tr>
+                 <tr>
+                    <td style="padding-left: 15px;">Partially Positive</td>
+                    <td style="padding-left: 180px;">1</td>
+                </tr>
+                <tr>
+                    <td style="padding-left: 15px;">Neutral</td>
+                    <td style="padding-left: 180px;">2</td>
+                </tr>
+                <tr>
+                    <td style="padding-left: 15px;">Partially Negative</td>
+                    <td style="padding-left: 180px;">3</td>
+                </tr>
+                <tr>
+                    <td style="padding-left: 15px;">Negative</td>
+                    <td style="padding-left: 180px;">4</td>
+                </tr>-->
+
+            </tbody>
+         </table>
+                    <div style="margin-top: 50px;" id="pie_chart_container">
+                        <canvas id="pie_chart"></canvas>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div style="width: 100%;margin-top:50px;"
+                class="card">
+                <div id="generate_link_container" style="padding-top: 20px;padding-bottom: 20px;" class="card-body">
+                    <img style="float: left;height: 300px;width:300px;" src="{{ url_for('static', filename='img/report sample.png') }}">
+                    <p class="text-justify" style="width: 15%;margin-left: 70px;margin-top:5%;float:left;">PDF report allows you to export some sample data, time series graph, bar graph and doughnut chart so that you can discuss with novice team-members.</p>
+                    <ul id="report_features" style="margin-left: 95px;margin-top:5%;float: left;">
+                        <li>Include sample data</li>
+                        <li>Include data visualizations</li>
+                        <li>Filter data</li>
+                        <li>Download for later use</li>
+                    </ul>
+                    <!--<h1>Generate pdf report...</h1>-->
+                    {% set pn = project_name %}
+                    {% set pc = project_category %}
+
+                     <a id="generate_report_link" target="_blank" style="margin-top:20%;background-color: #0f93fe;color:white;padding: 5px 8px 5px 8px;float:right;border-radius: 5px;float: right;"
+            href="{{ url_for('get_flask_weasy_pdf', project_name=pn, project_category=pc) }}">Generate Report</a>
+
+
+
+
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+
+    <!--=================================
+         MAIN CONTENT -->
+    <!--=================================
+         Footer -->
+    <footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;" class="main-bg pt-5 pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <div>
+                        <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}"
+                                style="width: 100;height:50px;margin-bottom: 0%;" alt="img"></a>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <ul class=" list-inline" style="margin-top: 10px;">
+                        <li class="list-inline-item">
+                            <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                                onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                                onmouseout="this.style.color='white'"
+                                href="{{ url_for('features_endpoint') }}">Features</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                                onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'
+                                onmouseout="this.style.color='white'"
+                                href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="background-color: white;height:3px;">
+            <div class="pt-3">
+                <div class="row justify-content-between">
+                    <div class="col-auto mr-auto">
+                        <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                                    target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                                        src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+    </footer>
+
+
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+
+
+</body>
+
+</html>

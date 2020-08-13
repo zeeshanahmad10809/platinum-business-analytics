@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <!-- Required meta tags -->
+
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Demo</title>
+   <!-- Favicon -->
+   <link rel="shortcut icon" href="https://iqonicthemes.com/themes/vizion/chatbot/images/favicon.ico">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+   <!-- Typography CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+   <!-- Style CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- Responsive CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/response.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+    <script>
+        var xhr = null;
+
+
+        function getSentimentTag(sentiment_no){
+             var sentiment_tag;
+            if(sentiment_no == '0'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #ff0000;color: #ff0000;padding:8px;display: inline-block;border-radius: 6px;font-size: small;margin-left:25px;">
+        Negative
+    </div>`;
+            }
+            else if(sentiment_no == '1'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #c41e3a;color: #c41e3a;padding:8px;display: inline-block;border-radius: 6px;font-size:small;margin-left:25px;">
+        Partially Negative
+    </div>`;
+            }
+            else if(sentiment_no == '2'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #c0c0c0;color: #c0c0c0;padding:8px;display: inline-block;border-radius: 6px;font-size:small;margin-left:25px;">
+        Neutral
+    </div>`;
+            }
+            else if(sentiment_no == '3'){
+                sentiment_tag = ` <div style="float:right;border: 1.5px solid #4f7942;color: #4f7942;padding:8px;display: inline-block;border-radius: 6px;font-size:small;margin-left:25px;">
+        Partially Positive
+    </div>`;
+            }
+            else if(sentiment_no == '4'){
+                sentiment_tag = `<div style="float:right;border: 1.5px solid #228b22;color: #228b22;padding:8px;display: inline-block;border-radius: 6px;font-size:small;margin-left:25px;">
+        Positive
+    </div>`;
+            }
+            return sentiment_tag;
+
+        }
+
+        function getSentenceContainer(sentence_text, sentence_sentiment){
+            var sentiment_tag = getSentimentTag(sentence_sentiment);
+
+            var sentenceHTML = `<div class="card">
+    <div class="card-body">
+        <p class="card-text">`+sentiment_tag+``+sentence_text+`</p>
+    </div>
+</div>`;
+            return sentenceHTML;
+
+
+        }
+
+
+         function getDataResponse(){
+            var payload = {"text": $("#analyze_textarea").val()};
+            xhr = $.ajax({
+                    url: 'analyze_text',
+                    type: 'POST',
+                    data: payload,
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (response) {
+                        //alert(response);
+                        if (response.length == 0)
+                        {
+                            //Invalid text
+                            $("#parent").css("display", "block");
+
+                            return;
+                        }
+                        else{
+                            $("#parent").css("display", "none");
+
+                            $("#phrases-div").empty();
+                            console.log(response);
+                            for(var key in response){
+                                if(key == "last")
+                                    continue;
+                                if(response.hasOwnProperty(key)){
+                                    $("#phrases-div").append(getSentenceContainer(key, response[key]));
+                                }
+                            }
+                            for(var key in response["last"]){
+                                $("#phrases-div").append(getSentenceContainer(key, response["last"][key]));
+
+                            }
+
+
+
+                        }
+
+                        setTimeout(function () {
+                            $("#exampleModal").modal("hide");
+                        }, 500);
+
+
+
+                    },
+                    error: function () {
+                          alert("error");
+                          setTimeout(function () {
+                            $("#exampleModal").modal("hide");
+                        }, 500);
+                    }
+                });
+        }
+
+
+        $(document).ready(function () {
+
+            $("#analyze_btn").click(function () {
+                xhr = null;
+                if($("#analyze_textarea").val().length < 1){
+                    $("#parent").css("display", "block");
+                }
+                else{
+                    $("#phrases-div").empty();
+                    $("#parent").css("display", "none");
+                    $("#exampleModal").modal("show");
+                    getDataResponse();
+
+
+
+                }
+
+            });
+
+            $("#cancel_analyze_btn").click(function () {
+                xhr.abort();
+                $("#phrases-div").empty();
+            });
+
+
+        });
+
+
+
+    </script>
+
+
+ <style type="text/css">
+@keyframes ldio-nhyhy7p63em {
+  0% { transform: translate(-50%,-50%) rotate(0deg); }
+  100% { transform: translate(-50%,-50%) rotate(360deg); }
+}
+.ldio-nhyhy7p63em div {
+  position: absolute;
+  width: 128.05px;
+  height: 128.05px;
+  border: 5.91px solid #0f93f3;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+.ldio-nhyhy7p63em div {
+  animation: ldio-nhyhy7p63em 1.5384615384615383s linear infinite;
+  top: 98.5px;
+  left: 98.5px
+}
+.loadingio-spinner-rolling-2hx7brpslj2 {
+  width: 197px;
+  height: 197px;
+  display: inline-block;
+  overflow: hidden;
+  background: rgba(NaN, NaN, NaN, 0);
+}
+.ldio-nhyhy7p63em {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0; /* see note above */
+}
+.ldio-nhyhy7p63em div { box-sizing: content-box; }
+/* generated by https://loading.io/ */
+</style>
+
+
+
+
+
+
+</head>
+
+<body class=" app-no-scrollbar">
+   <!--=================================
+         Header -->
+   <header id="header" class="">
+      <div class="container">
+         <div class="row align-items-center">
+            <div class="col-lg-9">
+               <nav class="navbar navbar-expand-lg navbar-light">
+                  <a class="navbar-brand" href="{{ url_for('home_endpoint') }}">
+                     <img class="logo" src="{{ url_for('static', filename='icon/Logo1.png') }}" alt="image">
+                     <img class="logo-stiky" src="{{ url_for('static', filename='icon/logo-stiky.png') }}" alt="image">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('home_endpoint') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('features_endpoint') }}">Features</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link active" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                        </li>
+                        <li class="nav-item">
+                           <a class="nav-link" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                        </li>
+                     </ul>
+                  </div>
+               </nav>
+            </div>
+            <div class="col-lg-3 text-right">
+               <ul class="login">
+                   {% if 'user' in session.keys()  %}
+                   <li class="d-inline"><a href="{{ url_for('logout_endpoint') }}">Logout</a></li>
+                   {% else %}
+                  <li class="d-inline"><a href="{{ url_for('login_endpoint') }}">Login</a></li>
+                  <li class="d-inline active"><a href="{{ url_for('register_endpoint') }}">Register</a></li>
+                   {% endif %}
+               </ul>
+            </div>
+         </div>
+      </div>
+   </header>
+   <!--=================================
+         Header -->
+   <!--=================================
+         Banner -->
+
+   <div id="banner" class="banner">
+      <div class="banner-text" style="padding-top: 150px;padding-bottom:50px;">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-5 col-md-12 col-sm-12" style="margin-bottom: 0px;">
+                  <h1 style="font-size: xx-large;" class="text-uppercase">Demo</h1>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+    <div id='parent' style='width: 100%;text-align:center;margin-top:30px;margin-bottom: 30px;display: none;'>
+       <div id='child' class="alert alert-success" style='width:700px;margin:0px auto;'>
+           <strong>Invalid!</strong> Please enter some text.
+       </div>
+   </div>
+
+   <div style="background-color: transparent;padding-left: 10%;padding-right: 10%;padding-top:5%;padding-bottom: 10%;">
+      <div style="position: relative;width:40%;">
+         <div class="form-group blue-border">
+            <h3 for="exampleFormControlTextarea4">Enter text</h3>
+            <textarea id="analyze_textarea" class="form-control" placeholder="Enter text here..." id="exampleFormControlTextarea4"
+               rows="6"></textarea>
+         </div>
+         <button id="analyze_btn" type="button" class="btn blue-button" style="position:absolute;right:0%;">Analyze</button>
+      </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Demo</h5>
+        <button id="cancel_analyze_btn" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+          <div id="loading_div" style="margin-top: 20px;text-align: center;margin-bottom: 80px;">
+                <div class="loadingio-spinner-rolling-2hx7brpslj2"><div class="ldio-nhyhy7p63em">
+                <div></div>
+                </div></div>
+                <h3 style="margin-top: 4px;">Analyzing...</h3>
+                <h5 style="margin-top: 1px;">Please wait..</h5>
+
+            </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+      <div id="phrases-div" style="margin-top: 100px;width: 80%;min-height: 500px;">
+         <!--<div class="card">
+            <div class="card-body">
+               <p class="card-text">
+                  <img src="{{ url_for('static', filename='img/sentiment.png') }}"
+                     style="margin-left: 15px;width:40px;height:40px;float:right;display: block;text-align: center;display: block;">
+                  Some quick example text to build on the panel title and make up the bulk of the
+                  panel's
+                  content. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minus voluptatum, saepe cum
+                  rerum,
+                  ipsam sapiente dolore pariatur aut fugiat error veniam natus esse voluptatibus exercitationem
+                  voluptates perspiciatis aliquam aspernatur doloribus!</p>
+
+
+            </div>
+         </div>
+         <div class="card">
+            <div class="card-body">
+               <p class="card-text">
+                  <img src='{{ url_for('static', filename='img/sentiment.png') }}' style="margin-left: 15px;width:40px;height:40px;float:right;">
+                  Some quick example text to build on the panel
+                  title and make up the bulk of the
+                  panel's
+                  content.</p>
+
+            </div>
+         </div>
+         <div class="card">
+            <div class="card-body">
+               <p class="card-text">
+                  <img src='{{ url_for('static', filename='img/sentiment.png') }}' style="margin-left: 15px;width:40px;height:40px;float:right;">
+                  Some quick example text to build on the panel
+                  title and make up the bulk of the
+                  panel's
+                  content.</p>
+            </div>
+         </div>
+         <div class="card">
+            <div class="card-body">
+               <p class="card-text">
+                  <img src='{{ url_for('static', filename='img/sentiment.png') }}' style="margin-left: 15px;width:40px;height:40px;float:right;">
+                  Some quick example text to build on the panel
+                  title and make up the bulk of the
+                  panel's
+                  content.</p>
+            </div>
+         </div>
+
+      </div>-->
+
+
+
+
+
+   </div>
+   </div>
+
+
+    <footer id="contact" style="background-color: #0f93fe;padding-bottom:7px;width: 100%;" class="main-bg pt-5 pb-5">
+      <div class="container">
+         <div class="row">
+            <div class="col-auto mr-auto">
+               <div>
+                  <a href="index.html"><img src="{{ url_for('static', filename='icon/Logo1.png') }}" style="width: 100;height:50px;margin-bottom: 0%;"
+                        alt="img"></a>
+               </div>
+            </div>
+            <div class="col-auto">
+               <ul class=" list-inline" style="margin-top: 10px;">
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('home_endpoint') }}">Home</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('features_endpoint') }}">Features</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('demo_endpoint') }}">Demo</a>
+                  </li>
+                  <li class="list-inline-item">
+                     <a class="nav-link" style="color:white;" onmouseover="this.style.color='#222222'"
+                        onmouseout="this.style.color='white'" href="{{ url_for('projects_endpoint') }}">Dashboard</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <hr style="background-color: white;height:3px;">
+         <div class="pt-3">
+            <div class="row justify-content-between">
+               <div class="col-auto mr-auto">
+                  <h6 class="text-white iq-font-18"><span>Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                           target="_blank" href="https://www.google.com/"><img class="bottom-logo-img"
+                              src="{{ url_for('static', filename='icon/uog-logo.png') }}"></a> </span></h6>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+   </footer>
+
+
+   <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+   <!-- main -->
+   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   <!-- Custom -->
+   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+</body>
+
+</html>
