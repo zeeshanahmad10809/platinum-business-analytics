@@ -67,9 +67,7 @@ mongo = PyMongo(app)
 mail = Mail(app)
 limiter = Limiter(app, key_func=get_remote_address)
 scheduler = BackgroundScheduler()
-
 # logging.basicConfig(filename='demo.log', level=logging.DEBUG)
-
 url_serializer = URLSafeTimedSerializer(app.config.get("SECRET_KEY"))
 
 
