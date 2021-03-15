@@ -13,47 +13,53 @@ from bson.objectid import ObjectId
 from textblob import TextBlob
 from langdetect import detect
 
+
 class AmazonPipeline(object):
     def __init__(self):
-        client = pymongo.MongoClient('localhost', 27017)
-        SocialBird = client['PlatinumBusinessAnalytics']
-        self.ProjectData = SocialBird['ProjectData']
+        client = pymongo.MongoClient("localhost", 27017)
+        SocialBird = client["PlatinumBusinessAnalytics"]
+        self.ProjectData = SocialBird["ProjectData"]
         logging.log(logging.INFO, "Docuement Created Succeessfully!")
 
     def process_item(self, item, spider):
-        #b = TextBlob(item['review_data'])
-        #if b.detect_language() != 'en':
+        # b = TextBlob(item['review_data'])
+        # if b.detect_language() != 'en':
         #    return item
-        if detect(item['review_data']) != 'en':
+        if detect(item["review_data"]) != "en":
             return item
 
-
-
-        r = requests.get("http://127.0.0.1:5000/get_sentiment/", params={"text": item['review_data']})
+        r = requests.get(
+            "http://127.0.0.1:5000/get_sentiment/", params={"text": item["review_data"]}
+        )
         if r.status_code == 200:
-            item['review_sentiment'] = r.json()['Sentiment']
+            item["review_sentiment"] = r.json()["Sentiment"]
         else:
-            item['review_sentiment'] = 2
+            item["review_sentiment"] = 2
 
-        #item['review_sentiment'] = 1
-        logging.warning("This is sentiment "+str(item['review_sentiment']))
-        #self.temp_doc.insert_one(dict(item))
-        self.ProjectData.update({"_id": item['user_id'], "projects._id":item['project_id']},
-                                {"$push": {"projects.$.data": {
-                                    "user_picture": item['user_picture'],
-                                    "user_name": item['user_name'],
-                                    "review_id": ObjectId(),
-                                    "review_title": item['review_title'],
-                                    "review_date": item['review_date'],
-                                    "review_data": item['review_data'],
-                                    "seen": False,
-                                    "review_sentiment": item['review_sentiment']
-                                }}})
+        # item['review_sentiment'] = 1
+        logging.warning("This is sentiment " + str(item["review_sentiment"]))
+        # self.temp_doc.insert_one(dict(item))
+        self.ProjectData.update(
+            {"_id": item["user_id"], "projects._id": item["project_id"]},
+            {
+                "$push": {
+                    "projects.$.data": {
+                        "user_picture": item["user_picture"],
+                        "user_name": item["user_name"],
+                        "review_id": ObjectId(),
+                        "review_title": item["review_title"],
+                        "review_date": item["review_date"],
+                        "review_data": item["review_data"],
+                        "seen": False,
+                        "review_sentiment": item["review_sentiment"],
+                    }
+                }
+            },
+        )
         logging.warning("Added amazon review to database...")
         return item
 
-
-        '''
+        """
         #I think match only works for first condition only or works for base attribute conditions and not for the nested ones...
         self.ProjectData.aggregate([
         {"$match": {
@@ -252,4 +258,4 @@ class AmazonPipeline(object):
         
         
         
-        '''
+        """

@@ -19,4 +19,3 @@ class GoogleItem(scrapy.Item):
     publish_date = scrapy.Field()
     user_id = scrapy.Field()
     project_id = scrapy.Field()
-

@@ -9,27 +9,26 @@ from scrapy import signals
 from scrapy.http import HtmlResponse
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-'''from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+"""from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By'''
+from selenium.webdriver.common.by import By"""
 import logging
 import time
 
 options = Options()
 options.headless = False
-driver = webdriver.Firefox(executable_path='../geckodriver')
+driver = webdriver.Firefox(executable_path="../geckodriver")
 
 
-
-
-'''des_cap = dict(DesiredCapabilities.PHANTOMJS)
+"""des_cap = dict(DesiredCapabilities.PHANTOMJS)
 des_cap["phantomjs.page.settings.userAgent"] = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"
 )
 driver = webdriver.PhantomJS(executable_path='./phantomjs',
                              desired_capabilities=des_cap)
-driver.set_window_size(1024, 768)'''
+driver.set_window_size(1024, 768)"""
 
 
 class RottenTomatoesSpiderMiddleware(object):
@@ -77,7 +76,7 @@ class RottenTomatoesSpiderMiddleware(object):
             yield r
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info("Spider opened: %s" % spider.name)
 
 
 class RottenTomatoesDownloaderMiddleware(object):
@@ -104,17 +103,19 @@ class RottenTomatoesDownloaderMiddleware(object):
         #   installed downloader middleware will be called
 
         logging.log(logging.INFO, "Entered process request inside Middleware!")
-        if 'reviews?type=user' in request.url:
+        if "reviews?type=user" in request.url:
             driver.get(request.url)
             body = driver.page_source
 
-            '''
+            """
             driver.save_screenshot('page1.png')
             element_present = EC.presence_of_element_located((By.XPATH, '//button[@data-direction="next"]'))
             WebDriverWait(driver, 8).until(element_present)
-            '''
+            """
 
-            return  HtmlResponse(driver.current_url, body=body, encoding='utf-8', request=request)
+            return HtmlResponse(
+                driver.current_url, body=body, encoding="utf-8", request=request
+            )
 
         return None
 
@@ -125,7 +126,7 @@ class RottenTomatoesDownloaderMiddleware(object):
         # - return a Response object
         # - return a Request object
         # - or raise IgnoreRequest
-        #driver.close()
+        # driver.close()
         return response
 
     def process_exception(self, request, exception, spider):
@@ -139,4 +140,4 @@ class RottenTomatoesDownloaderMiddleware(object):
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+        spider.logger.info("Spider opened: %s" % spider.name)
